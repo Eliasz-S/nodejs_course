@@ -27,11 +27,11 @@ if (requiredDirectory) {
 
 const requiredString = options.findString;
 
-chooseObject(executionDir);
+selectObject(executionDir);
 
 const isFile = (fileName) => fs.lstatSync(fileName).isFile();
 
-function chooseObject(directory) {
+function selectObject(directory) {
     const fileList = fs.readdirSync(directory);
     fileList.unshift('..'); // чтобы была опция вернуться на уровень выше
 
@@ -58,7 +58,7 @@ const checkObjType = (dir, fileName) => {
             console.log(data);
         })
     } else {
-        return chooseObject(fullPath);
+        return selectObject(fullPath);
     }
 }
 
