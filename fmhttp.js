@@ -33,7 +33,7 @@ function getFileContents(res, filePath) { // функция для чтения 
     readStream.pipe(res);
 }
 
-function getObjList(res, filePath) {
+function getObjList(res, filePath) { // функция для вывода списка папок и файлов в выбранной директории
     const fileList = fs.readdirSync(filePath);
     fileList.unshift('..'); // чтобы была опция вернуться на уровень выше
 
