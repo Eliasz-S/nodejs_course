@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <script
+            src="https://cdn.socket.io/4.4.1/socket.io.min.js"
+            integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H"
+            crossorigin="anonymous"
+    >
+    </script>
+</head>
+<body>
+    <input id="input" type="text" autofocus>
+    <button id="button">Send</button>
+    <div id="messages"></div>
+</body>
+<script>
+    const socket = io('localhost:5555');
+    const messageBlock = document.querySelector('#messages');
+    const input = document.querySelector('#input');
+    const button = document.querySelector('#button');
+    const userName = prompt(`Добро пожаловать в чат!\nВведите, пожалуйста, Ваш логин:`);
+
+    button.addEventListener('click', () => {
+        const data = {
+            login: userName,
+            message: input.value,
+        };
+
+        if (data.message.trim() !== '') { // проверка содержимого input на пустоту или только пробелы
+            socket.emit('client-msg', data);
+        }
+
+        input.value = '';
+    });
+
+    socket.on('connect', () => {
+        console.log('connected');
+
+        const userData = {
+            login: userName,
+        };
+
+        socket.emit('client-connect', userData);
+    });
+
+    socket.on('server-msg', (data) => {
+        messageBlock.insertAdjacentHTML(
+            'beforeend',
+            `<div><span style="color: darkmagenta">${data.login}</span>: ${data.message}</div>`
+        );
+    });
+
+    socket.on('server-connect', (data) => {
+        messageBlock
+            .insertAdjacentHTML(
+                'beforeend',
+                `<div style="color: darkblue; font-style: italic">
+                    ${data.login} connected to the chat
+                </div>`
+            );
+    });
+
+    socket.on('server-disconnect', (data) => {
+        messageBlock
+            .insertAdjacentHTML(
+                'beforeend',
+                `<div style="color: red; font-style: italic">
+                    ${data.login} left the chat
+                </div>`
+            );
+    });
+
+    socket.on('server-reconnect', (data) => {
+        messageBlock
+            .insertAdjacentHTML(
+                'beforeend',
+                `<div style="color: darkolivegreen; font-style: italic">
+                    ${data.login} successfully reconnected to the chat
+                </div>`
+            );
+    });
+</script>
+</html>
